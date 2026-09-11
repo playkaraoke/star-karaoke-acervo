@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Star Karaoke Acervo - Catálogo de músicas de caraokê com busca avançada">
+  <meta name="theme-color" content="#3b82f6">
+  <title>⭐ Star Karaoke Acervo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>⭐ Star Karaoke Acervo</h1>
+        <button class="toggle-btn" id="themeToggle" aria-label="Alternar tema">🌙 Dark</button>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Buscar por artista, música, código..." 
+          autocomplete="off"
+          aria-label="Buscar músicas"
+        >
+      </div>
+    </header>
+
+    <div class="content" id="content">
+      <div class="loading-state" id="loadingState">Carregando catálogo...</div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Detalhes da música</h2>
+        <button class="close-btn" id="closeBtn" aria-label="Fechar">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
