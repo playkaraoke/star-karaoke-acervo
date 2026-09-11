@@ -45,25 +45,30 @@ class StarKaraokeApp {
     const queryTerms = cleanQuery.split(/\s+/).filter(Boolean);
     
     return data
+      .filter(item => {
+        const searchText = this.removeAccents(
+          `${item.Interprete} ${item.Nome} ${item.Codigo} ${item.Trecho}`
+        );
+        
+        // OBRIGATÓRIO: TODOS os termos devem estar presentes
+        return queryTerms.every(term => searchText.includes(term));
+      })
       .map(item => {
         const searchText = this.removeAccents(
           `${item.Interprete} ${item.Nome} ${item.Codigo} ${item.Trecho}`
         );
         
-        // Score 1: Match exato (a query inteira está no texto)
-        const exactMatch = searchText.includes(cleanQuery) ? 1000 : 0;
+        // Score 1: Match exato (a frase inteira)
+        const exactMatch = searchText.includes(cleanQuery) ? 10000 : 0;
         
-        // Score 2: Todos os termos estão no texto
-        const allTermsMatch = queryTerms.every(q => searchText.includes(q)) ? 100 : 0;
+        // Score 2: Posição - quanto mais no início, melhor
+        const firstTermPos = Math.min(...queryTerms.map(t => searchText.indexOf(t)));
+        const positionScore = Math.max(0, 1000 - firstTermPos);
         
-        // Score 3: Contagem de termos encontrados
-        const termsFound = queryTerms.filter(q => searchText.includes(q)).length;
-        
-        const score = exactMatch || allTermsMatch || termsFound;
+        const score = exactMatch + positionScore;
         
         return { ...item, score };
       })
-      .filter(item => item.score > 0)
       .sort((a, b) => b.score - a.score);
   }
 
