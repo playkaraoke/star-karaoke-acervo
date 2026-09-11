@@ -41,9 +41,8 @@ class StarKaraokeApp {
   fuzzySearch(query, data) {
     if (!query.trim()) return data;
     
-    const cleanQuery = this.removeAccents(query)
-      .split(/\s+/)
-      .filter(Boolean);
+    const cleanQuery = this.removeAccents(query).trim();
+    const queryTerms = cleanQuery.split(/\s+/).filter(Boolean);
     
     return data
       .map(item => {
@@ -51,8 +50,16 @@ class StarKaraokeApp {
           `${item.Interprete} ${item.Nome} ${item.Codigo} ${item.Trecho}`
         );
         
-        const matches = cleanQuery.filter(q => searchText.includes(q)).length;
-        const score = matches > 0 ? matches : 0;
+        // Score 1: Match exato (a query inteira está no texto)
+        const exactMatch = searchText.includes(cleanQuery) ? 1000 : 0;
+        
+        // Score 2: Todos os termos estão no texto
+        const allTermsMatch = queryTerms.every(q => searchText.includes(q)) ? 100 : 0;
+        
+        // Score 3: Contagem de termos encontrados
+        const termsFound = queryTerms.filter(q => searchText.includes(q)).length;
+        
+        const score = exactMatch || allTermsMatch || termsFound;
         
         return { ...item, score };
       })
@@ -174,7 +181,7 @@ class StarKaraokeApp {
 
     html += `
       <button class="copy-btn" id="copyBtn">
-        📋 Copiar Dados
+        📋 Copiar Código da Música
       </button>
     `;
 
@@ -182,7 +189,7 @@ class StarKaraokeApp {
     
     const copyBtn = document.getElementById('copyBtn');
     copyBtn.addEventListener('click', () => {
-      const texto = `Código\n${song.Codigo}\n\nMúsica\n${song.Nome}\n\nArtista\n${song.Interprete}\n\nTrecho\n${song.Trecho}\n\nIdioma\n${song.Idioma}\n\nCatálogo\n${song.Catalogo}`;
+      const texto = song.Codigo;
       
       navigator.clipboard.writeText(texto).then(() => {
         const textOriginal = copyBtn.textContent;
@@ -192,7 +199,7 @@ class StarKaraokeApp {
         }, 2000);
       }).catch(err => {
         console.error('Erro ao copiar:', err);
-        alert('Erro ao copiar dados');
+        alert('Erro ao copiar código');
       });
     });
 
